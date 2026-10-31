@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The Continue watching cards are built in code (WatchRow); these ids find their parts again. -->
+    <item name="watch_art" type="id" />
+    <item name="watch_title" type="id" />
+    <item name="watch_sub" type="id" />
+    <item name="watch_progress" type="id" />
+    <item name="watch_ring" type="id" />
+</resources>

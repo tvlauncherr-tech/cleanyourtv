@@ -140,6 +140,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private AppAdapter adapter;
     private RecyclerView grid;
+    /** Continue watching strip under the dock (WatchRow); null when switched off or it cannot be added. */
+    private WatchRow watchRow;
+    /** Column of the dock tile that last had focus, where Up from the Continue watching strip returns to. */
+    private int lastDockColumn = 0;
     private FrameLayout root;
     private WallpaperPlayer wallpaperPlayer;
     private GlassView glass;
@@ -669,6 +673,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         adapter.setSavedOrder(Order.ranks(savedOrder, dockApps), Order.docked(savedOrder, dockApps));
         grid.setAdapter(adapter);
 
+        // Continue watching: only beside a dock row of its own, and it takes no room until it has cards (so, without
+        // READ_TV_LISTINGS granted, never).
+        if (!singleRow && dockRow) {
+            watchRow = WatchRow.create(this, grid, new WatchRow.Host() {
+                @Override public void onUp() {
+                    focusTile(Math.min(lastDockColumn, COLUMNS - 1));
+                }
+
+                @Override public void onDown() {
+                    // On to the first row of apps, in the column the dock had; nothing below means the key stops here.
+                    if (adapter.appCount() > COLUMNS) {
+                        focusTile(Math.min(COLUMNS + lastDockColumn, adapter.appCount() - 1));
+                    }
+                }
+
+                @Override public void onFocused() {
+                    hideGlass();
+                    hideHero();
+                }
+            });
+        }
+
         // tvOS layout: push the dock row towards the bottom of the screen, leaving room for
         // rows_below_dock grid rows under it; the rest of the grid stays below until you press Down.
         int rowsBelowDock = cfg.rowsBelowDock;
@@ -1076,6 +1102,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (gameDay != null) gameDay.start();
         sky.update();
         wallpaperPlayer.start();
+        if (watchRow != null) watchRow.refresh();
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && lamp != null) {
             lamp.start();
@@ -1735,6 +1762,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onTileFocused(int position, View card) {
         lastFocused = position;
+        if (position < COLUMNS) lastDockColumn = position;
         lastFocusedKey = adapter.keyAt(position);
         // Focus restored before the first layout (cold start): the tile has no size yet, and the glass
         // would be sized to 2*pad. Run again once the tile is laid out.
@@ -2388,6 +2416,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
             target = position - COLUMNS;
         } else {
+            // Down from the dock reaches the Continue watching strip when it has cards (Up and Down there lead back
+            // to the dock and on to the apps); with no strip this line does nothing and Down is as it was.
+            if (position < COLUMNS && watchRow != null && watchRow.focus()) return true;
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
             if (position >= lastRowStart) {
                 if (adapter.isLibraryAt(count)) focusLibrary();

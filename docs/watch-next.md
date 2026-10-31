@@ -48,3 +48,22 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
 Source: `createSqlParams()` in `packages/providers/TvProvider/src/com/android/providers/tv/TvProvider.java`
 (AOSP) holds the `READ_TV_LISTINGS` and `searchable` logic; both permissions are defined in that
 module's `AndroidManifest.xml`.
+
+## The Home strip
+
+Home can show these rows as a strip of cards under the dock (`WatchRow`, `WatchNext`):
+
+- **Switch:** the permission is the switch. Without it the strip never appears; to turn it off again run
+  `adb shell pm revoke com.gathin.tvhome android.permission.READ_TV_LISTINGS`.
+- **Permission:** grant it once, and again after a reinstall that clears permissions:
+  `adb shell pm grant com.gathin.tvhome android.permission.READ_TV_LISTINGS`. Until then the strip stays hidden and
+  Home looks as it did.
+- **What it shows:** unfinished rows from the last 120 days, newest first, one card per show of an app, at most ten,
+  with the app's banner (or icon), the title, season and episode, and a progress bar where the app gives a position.
+  A row at 95% or more is treated as finished, so the app's "next episode" row for the same show takes its place.
+- **Navigation:** Down from the dock reaches the strip; Left and Right walk it; OK opens the row's `intent_uri`;
+  Up goes back to the dock and Down on to the first row of apps.
+- **No rows, no strip:** with no permission, nothing published or a provider that is missing, nothing is added to the
+  screen and nothing is reserved. Apps that publish no Watch Next rows (YouTube, see above) never appear.
+- **Not done:** posters. Most rows carry `https://` posters, and loading them needs network access that this
+  launcher does not otherwise use, so the card shows the app's banner instead.

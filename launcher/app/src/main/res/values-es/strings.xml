@@ -21,6 +21,7 @@
     <string name="ethernet">Ethernet</string>
     <string name="offline">Sin conexión</string>
     <string name="not_available">No disponible en este TV</string>
+    <string name="continue_watching">Continuar viendo</string>
     <string name="cant_open">No se puede abrir %1$s</string>
     <string name="date_format">EEEE d \'de\' MMMM</string>
     <string name="date_format_home">EEEE\nd \'de\' MMMM</string>
