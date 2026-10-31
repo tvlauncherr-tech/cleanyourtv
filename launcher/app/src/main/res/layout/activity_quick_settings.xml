@@ -5,6 +5,7 @@
     android:id="@+id/scrim"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextClock android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="top|end" android:layout_marginTop="44dp" android:layout_marginEnd="56dp" android:format12Hour="h:mm" android:format24Hour="HH:mm" android:textColor="#FFFFFFFF" android:textSize="32sp" />
 
     <LinearLayout
         android:id="@+id/panel"
