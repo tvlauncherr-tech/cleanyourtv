@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF101419"
+    android:background="#A6101419"
     android:fillViewport="true">
 
     <LinearLayout
@@ -13,6 +13,9 @@
         android:paddingEnd="72dp"
         android:paddingTop="38dp"
         android:paddingBottom="38dp">
+<TextClock android:layout_width="wrap_content" android:layout_height="wrap_content"
+android:layout_gravity="end" android:format12Hour="h:mm" android:format24Hour="HH:mm"
+android:textColor="#FFFFFFFF" android:textSize="40sp" />
 
         <TextView
             android:layout_width="match_parent"
